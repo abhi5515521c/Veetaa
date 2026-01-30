@@ -1,0 +1,601 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Veetaa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+            min-height: 100vh;
+            overflow-x: hidden;
+            /* Colorful Tint Background */
+            background-image:
+                radial-gradient(at 0% 0%, rgba(192, 132, 252, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(129, 140, 248, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(244, 114, 182, 0.15) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(167, 139, 250, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Ambient background container */
+        .gradient-bg {
+            /* Handled by body */
+        }
+
+        /* Glass Cards – Enterprise Minimal */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            backdrop-filter: blur(14px);
+            transition: background 0.2s ease, border 0.2s ease, transform 0.2s ease;
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.055);
+            border-color: rgba(255, 255, 255, 0.14);
+            transform: translateY(-2px);
+        }
+
+        /* Search Input – Calm & Focused */
+        .search-input {
+            background: transparent;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+            font-size: 2rem;
+            color: #f9fafb;
+            padding: 1rem 0;
+            width: 100%;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #9ca3af;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        /* Loader – Soft Neutral */
+        .loader {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #e5e7eb;
+            box-shadow: 32px 0 #e5e7eb, -32px 0 #e5e7eb;
+            position: relative;
+            animation: flash 0.6s ease-out infinite alternate;
+        }
+
+        @keyframes flash {
+            0% {
+                background-color: rgba(229, 231, 235, 0.25);
+                box-shadow: 32px 0 rgba(229, 231, 235, 0.25), -32px 0 #e5e7eb;
+            }
+
+            50% {
+                background-color: #e5e7eb;
+                box-shadow: 32px 0 rgba(229, 231, 235, 0.25), -32px 0 rgba(229, 231, 235, 0.25);
+            }
+
+            100% {
+                background-color: rgba(229, 231, 235, 0.25);
+                box-shadow: 32px 0 #e5e7eb, -32px 0 rgba(229, 231, 235, 0.25);
+            }
+        }
+
+        /* Typography Refinement */
+        h1,
+        h2,
+        h3 {
+            letter-spacing: -0.025em;
+            color: #000000;
+        }
+
+        /* Muted Text */
+        .text-gray-400 {
+            color: #9ca3af !important;
+        }
+
+        .text-gray-500 {
+            color: #6b7280 !important;
+        }
+
+        /* Accent Price (Professional Green) */
+        .text-green-400 {
+            color: #22c55e !important;
+        }
+    </style>
+</head>
+
+<body class="gradient-bg selection:bg-indigo-100 selection:text-indigo-900">
+
+    <div class="max-w-7xl mx-auto px-6 py-12 md:py-20 flex flex-col min-h-screen">
+
+        <!-- Minimal Header -->
+        <header class="flex justify-between items-center mb-20 animate-fade-in-down">
+            <div
+                class="text-2xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-500">
+                VEETAA
+            </div>
+            <div class="flex items-center gap-4">
+                <!-- Status Indicator -->
+                <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/60 border border-slate-200 shadow-sm transition-colors duration-300"
+                    id="apiStatusBadge">
+                    <span class="relative flex h-2 w-2">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-gray-400 opacity-75"
+                            id="statusPing"></span>
+                        <span
+                            class="relative inline-flex rounded-full h-2 w-2 bg-gray-500 transition-colors duration-300"
+                            id="statusDot"></span>
+                    </span>
+                    <span
+                        class="text-xs font-medium text-gray-400 transition-colors duration-300 tracking-wide uppercase"
+                        id="statusText">Connecting</span>
+                </div>
+                <div class="text-sm text-gray-500 font-medium">Future Of E-COM</div>
+            </div>
+        </header>
+
+        <!-- Main Search Area -->
+        <main class="flex-grow flex flex-col justify-center items-center mb-20 transition-all duration-700"
+            id="mainSection">
+            <div class="w-full max-w-3xl text-center">
+                <h1
+                    class="text-5xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-br from-slate-900 via-slate-700 to-slate-500">
+                    This is Price Intelligence.
+                </h1>
+                <p class="text-gray-400 mb-12 text-lg font-light">
+                    Vector + ETA + AI = Price Intelligence
+                </p>
+
+                <!-- Liquid Glass Search -->
+                <div class="relative group perspective-1000" id="searchWrapper">
+                    <div class="liquid-glass-container relative p-[2px] rounded-2xl transition-transform duration-100 ease-out"
+                        id="liquidContainer">
+                        <!-- Liquid Glow Blob -->
+                        <div class="liquid-glow absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                            id="liquidGlow"></div>
+
+                        <!-- Internal Glass -->
+                        <div
+                            class="relative bg-white/40 backdrop-blur-xl rounded-2xl flex items-center shadow-lg border border-white/40 overflow-hidden z-10">
+                            <input type="text" id="searchInput"
+                                class="w-full bg-transparent border-none px-8 py-5 text-xl text-slate-800 placeholder-slate-500/70 focus:outline-none focus:ring-0 font-light tracking-wide text-center"
+                                placeholder="Search for a product..." onkeypress="handleKeyPress(event)" autofocus>
+                            <div class="absolute right-4 pointer-events-none opacity-50">
+                                ↵
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <style>
+                    .perspective-1000 {
+                        perspective: 1000px;
+                    }
+
+                    .liquid-glass-container {
+                        box-shadow:
+                            0 4px 6px -1px rgba(0, 0, 0, 0.05),
+                            0 10px 15px -3px rgba(0, 0, 0, 0.05),
+                            0 20px 25px -5px rgba(0, 0, 0, 0.05),
+                            inset 0 0 20px rgba(255, 255, 255, 0.5);
+                    }
+
+                    .liquid-glow {
+                        background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y),
+                                rgba(167, 139, 250, 0.4),
+                                transparent 40%);
+                        z-index: 0;
+                    }
+                </style>
+
+                <script>
+                    function applyLiquidEffect(wrapperId, containerId, glowId, reverseTilt = false) {
+                        const wrapper = document.getElementById(wrapperId);
+                        const container = document.getElementById(containerId);
+                        const glow = document.getElementById(glowId);
+
+                        wrapper.addEventListener('mousemove', (e) => {
+                            const rect = wrapper.getBoundingClientRect();
+                            const x = e.clientX - rect.left;
+                            const y = e.clientY - rect.top;
+
+                            // Liquid Glow Position
+                            glow.style.setProperty('--mouse-x', `${x}px`);
+                            glow.style.setProperty('--mouse-y', `${y}px`);
+
+                            // Tilt Effect
+                            const centerX = rect.width / 2;
+                            const centerY = rect.height / 2;
+
+                            // Calculate rotation (inverted for natural feel if needed)
+                            const rotateX = ((y - centerY) / centerY) * -3;
+                            const rotateY = ((x - centerX) / centerX) * 3;
+
+                            container.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
+                        });
+
+                        wrapper.addEventListener('mouseleave', () => {
+                            container.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                        });
+                    }
+
+                    // Apply to Search
+                    applyLiquidEffect('searchWrapper', 'liquidContainer', 'liquidGlow');
+
+                    // Apply to Chart (Wait for it to be visible or apply immediately as it's in DOM)
+                    // Since it starts hidden, the rect might be 0, but event listeners are fine.
+                    // The rect calculation happens ON MOUSE MOVE, so it will work when visible.
+                    applyLiquidEffect('chartWrapper', 'chartContainer', 'chartGlow');
+                </script>
+
+                <div id="statusMsg" class="mt-8 text-sm text-gray-500 h-6"></div>
+                <div id="loader" class="hidden mt-8 flex justify-center">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Results Dashboard (Hidden Initially) -->
+        <div id="resultsDashboard" class="hidden transition-opacity duration-500 ease-in-out">
+
+            <!-- Top Row: Overview & Chart -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+
+                <!-- Summary Card -->
+                <div class="lg:col-span-5 flex flex-col justify-center">
+                    <button onclick="resetSearch()"
+                        class="text-slate-500 hover:text-indigo-600 mb-6 text-sm flex items-center gap-2 transition-colors w-fit font-medium">
+                        ← Back to Search
+                    </button>
+                    <h2 class="text-4xl font-bold mb-2" id="resProductTitle">Product Name</h2>
+                    <p class="text-gray-400 mb-8 max-w-md text-sm leading-relaxed" id="resDescription">
+                        Loading description...
+                    </p>
+
+                    <div class="flex gap-8">
+                        <div>
+                            <div class="text-gray-500 text-xs uppercase tracking-wider mb-1">Lowest Price</div>
+                            <div class="text-4xl font-bold text-green-400" id="resBestPrice">₹0</div>
+                        </div>
+                        <div>
+                            <div class="text-gray-500 text-xs uppercase tracking-wider mb-1">Availability</div>
+                            <div class="text-xl font-medium text-slate-700" id="resAvailability">Unknown</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pie/Doughnut Chart (Liquid Glass) -->
+                <div class="lg:col-span-7 relative group perspective-1000" id="chartWrapper">
+                    <div class="liquid-glass-container h-full relative p-[2px] rounded-2xl transition-transform duration-100 ease-out"
+                        id="chartContainer"
+                        style="background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.4);">
+
+                        <!-- Liquid Glow -->
+                        <div class="liquid-glow absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                            id="chartGlow"></div>
+
+                        <!-- Content -->
+                        <div class="relative z-10 w-full h-full p-8 flex items-center justify-center">
+                            <div
+                                class="absolute top-4 left-6 text-xs text-slate-500 uppercase tracking-widest font-bold">
+                                Market Split</div>
+                            <div style="height: 300px; width: 100%;">
+                                <canvas id="priceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Listings Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="cardsGrid">
+                <!-- Cards Injected Here -->
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Inspector Modal -->
+    <div id="inspectorModal"
+        class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-2xl p-8 relative bg-white/90">
+            <button onclick="closeInspector()"
+                class="absolute top-6 right-6 text-slate-400 hover:text-slate-900 transition">✕</button>
+            <h2 class="text-xl font-bold mb-6">Deep Inspection</h2>
+            <div id="inspectorContent" class="space-y-6">
+                <!-- Content here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8001";
+        let myChart = null;
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') searchProduct();
+        }
+
+        function resetSearch() {
+            document.getElementById('resultsDashboard').classList.add('hidden');
+            document.getElementById('mainSection').classList.remove('hidden');
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchInput').focus();
+        }
+
+        async function searchProduct() {
+            const query = document.getElementById('searchInput').value;
+            if (!query) return;
+
+            // UI State
+            const loader = document.getElementById('loader');
+            const status = document.getElementById('statusMsg');
+
+            loader.classList.remove('hidden');
+            status.innerText = "Oh… something interesting is happening....";
+
+            try {
+                const res = await fetch(`${API_BASE}/api/search`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ product_name: query })
+                });
+
+                const data = await res.json();
+
+                if (data.prices.length === 0) {
+                    status.innerText = "No listings found. Please try specific keywords.";
+                    loader.classList.add('hidden');
+                    return;
+                }
+
+                // Switch Views
+                document.getElementById('mainSection').classList.add('hidden');
+                document.getElementById('resultsDashboard').classList.remove('hidden');
+                loader.classList.add('hidden');
+                status.innerText = "";
+
+                renderDashboard(data);
+
+            } catch (err) {
+                console.error(err);
+                status.innerText = "Error connecting to Intelligence Engine.";
+                loader.classList.add('hidden');
+            }
+        }
+
+        function renderDashboard(data) {
+            // 1. Overview
+            const best = data.best_price;
+            document.getElementById('resProductTitle').innerText = data.product.product_name;
+            document.getElementById('resBestPrice').innerText = best ? `₹${best.price.toLocaleString('en-IN')}` : "N/A";
+            document.getElementById('resAvailability').innerText = best && best.in_stock ? "In Stock" : "Limited";
+            document.getElementById('resDescription').innerText = (best && best.description)
+                ? best.description.substring(0, 160) + "..."
+                : "Aggregated market data across multiple platforms for real-time comparison.";
+
+            // 2. Cards
+            const grid = document.getElementById('cardsGrid');
+            grid.innerHTML = '';
+
+            data.prices.forEach(item => {
+                const img = (item.images && item.images.length > 0) ? item.images[0] : null;
+
+                // Minimal Card Design
+                const card = document.createElement('div');
+                card.className = "glass-card overflow-hidden flex flex-col group";
+                card.innerHTML = `
+                    <div class="h-48 w-full bg-slate-50 flex items-center justify-center p-6 relative">
+                        ${img ? `<img src="${img}" class="h-full object-contain transition-transform duration-500 group-hover:scale-105" alt="Product">`
+                        : `<span class="text-slate-400 text-sm">No Preview</span>`}
+                        <div class="absolute top-4 left-4 text-[10px] font-bold tracking-widest uppercase bg-white/90 backdrop-blur border border-slate-100 px-2 py-1 rounded text-slate-600 shadow-sm">
+                            ${item.marketplace}
+                        </div>
+                    </div>
+                    <div class="p-6 flex-grow flex flex-col justify-between">
+                        <div>
+                            <a href="${item.url}" target="_blank" class="block font-medium text-lg mb-2 text-slate-800 hover:text-indigo-600 transition-colors line-clamp-2 leading-snug">
+                                ${item.description || item.url}
+                            </a>
+                        </div>
+                        <div class="flex items-end justify-between mt-6">
+                            <div class="text-2xl font-bold text-slate-900">
+                                ₹${item.price.toLocaleString('en-IN')}
+                            </div>
+                            <div class="flex gap-3">
+                                <button onclick="inspectUrl('${item.url}')" class="text-slate-400 hover:text-indigo-600 transition" title="Inspect">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                </button>
+                                <a href="${item.url}" target="_blank" class="text-slate-400 hover:text-indigo-600 transition" title="Visit">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            // 3. Chart (Pie/Doughnut as requested)
+            renderChart(data.prices);
+        }
+
+        function renderChart(prices) {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+
+            // Clean Data Labels
+            const labels = prices.map(p => {
+                if (p.marketplace && p.marketplace !== 'Online Store') return p.marketplace;
+                try { return new URL(p.url).hostname.replace('www.', '').split('.')[0]; } catch (e) { return 'Store'; }
+            });
+            const values = prices.map(p => p.price);
+
+            // Minimal Palette
+            const palette = [
+                '#818cf8', '#34d399', '#f472b6', '#60a5fa', '#a78bfa'
+            ];
+
+            if (myChart) myChart.destroy();
+
+            myChart = new Chart(ctx, {
+                type: 'doughnut', // Pie variant that looks more modern
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: palette,
+                        borderColor: '#fff', // Matches bg
+                        borderWidth: 2,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%', // Makes it a thin ring
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#475569',
+                                font: { family: 'Outfit', size: 12 },
+                                boxWidth: 10,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            backdropFilter: 'blur(10px)',
+                            borderWidth: 1,
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            titleColor: '#fff',
+                            bodyColor: '#e2e8f0'
+                        }
+                    }
+                }
+            });
+        }
+
+        async function inspectUrl(url) {
+            const modal = document.getElementById('inspectorModal');
+            const content = document.getElementById('inspectorContent');
+            modal.classList.remove('hidden');
+            content.innerHTML = `<div class="text-center py-10 text-gray-400">Deep scanning...</div>`;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/inspect`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: url })
+                });
+                const data = await res.json();
+
+                // Handle Error or Missing Data
+                if (!data || data.error || data.price === undefined) {
+                    content.innerHTML = `
+                        <div class="flex flex-col items-center justify-center py-8 text-center">
+                            <div class="bg-red-500/10 p-4 rounded-full mb-4">
+                                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800 mb-2">Inspection Failed</h3>
+                            <p class="text-slate-500 max-w-xs mx-auto text-sm">
+                                ${data?.error || "We couldn't extract live data from this page. It might be protected or unavailable."}
+                            </p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                content.innerHTML = `
+                    <div class="flex flex-col gap-6">
+                        <div class="border-b border-slate-100 pb-4">
+                            <div class="text-xs text-indigo-500 font-bold uppercase mb-2">Live Price Check</div>
+                            <div class="text-5xl font-bold text-slate-900">₹${data.price.toLocaleString('en-IN')}</div>
+                        </div>
+                        
+                        <div>
+                            <div class="text-xs text-slate-400 font-bold uppercase mb-1">Title</div>
+                            <div class="text-lg leading-snug text-slate-800">${data.title}</div>
+                        </div>
+
+                        <div class="p-4 bg-slate-50 rounded-lg border border-slate-100">
+                            <div class="text-xs text-slate-400 font-bold uppercase mb-2">Description</div>
+                            <div class="text-sm text-slate-600 leading-relaxed max-h-40 overflow-y-auto">
+                                ${data.description || "No specific details harvested."}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+            } catch (e) {
+                console.error(e);
+                content.innerHTML = `<div class="text-center py-10"><p class="text-red-500 font-bold mb-2">Connection Failed</p><p class="text-sm text-slate-500">Could not reach the intelligence engine.</p></div>`;
+            }
+        }
+
+        function closeInspector() {
+            document.getElementById('inspectorModal').classList.add('hidden');
+        }
+
+        // --- Health Check / Status ---
+        async function checkHealth() {
+            const dot = document.getElementById('statusDot');
+            const ping = document.getElementById('statusPing');
+            const text = document.getElementById('statusText');
+            const badge = document.getElementById('apiStatusBadge');
+
+            try {
+                const res = await fetch(`${API_BASE}/api/health`);
+                if (res.ok) {
+                    // Online
+                    dot.classList.remove('bg-gray-500', 'bg-red-500');
+                    dot.classList.add('bg-green-500');
+
+                    ping.classList.remove('bg-gray-400', 'bg-red-400');
+                    ping.classList.add('bg-green-400');
+
+                    text.innerText = "System Online";
+                    text.classList.remove('text-gray-400', 'text-red-400');
+                    text.classList.add('text-green-400');
+
+                    badge.classList.remove('border-red-500/20', 'bg-red-500/5');
+                    badge.classList.add('border-green-500/20', 'bg-green-500/5');
+                } else {
+                    throw new Error('API Error');
+                }
+            } catch (e) {
+                // Offline
+                dot.classList.remove('bg-green-500', 'bg-gray-500');
+                dot.classList.add('bg-red-500');
+
+                ping.classList.remove('bg-green-400', 'bg-gray-400');
+                ping.classList.add('bg-red-400');
+
+                text.innerText = "System Offline";
+                text.classList.remove('text-gray-400', 'text-green-400');
+                text.classList.add('text-red-400');
+
+                badge.classList.remove('border-green-500/20', 'bg-green-500/5');
+                badge.classList.add('border-red-500/20', 'bg-red-500/5');
+            }
+        }
+
+        // Initial check and poll every 10s
+        checkHealth();
+        setInterval(checkHealth, 10000);
+    </script>
+</body>
+
+</html>
